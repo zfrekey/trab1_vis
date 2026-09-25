@@ -1,0 +1,404 @@
+/* Estilo do caso Global Currency Atlas (Big Mac Index).
+   Usa os tokens definidos em shared/styles/style.css. */
+
+.atlas {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-3) var(--space-5);
+}
+
+.atlas-header {
+  max-width: 720px;
+  margin: 0 auto var(--space-4);
+  text-align: center;
+}
+
+.atlas-eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-1);
+  font-weight: 600;
+}
+
+.atlas-title {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  line-height: 1.25;
+  margin: 0 0 var(--space-2);
+}
+
+.atlas-intro {
+  color: var(--color-text-muted);
+  font-size: 14px;
+  margin: 0 0 var(--space-3);
+}
+
+.atlas-date-badge {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: var(--space-1) var(--space-3);
+  font-size: 12px;
+}
+
+.atlas-date-label {
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.atlas-date-value {
+  font-weight: 600;
+}
+
+.atlas-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.atlas-map-pane {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: var(--space-2);
+}
+
+.atlas-ranking-pane {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.atlas-legend-row {
+  display: flex;
+  justify-content: center;
+  margin: var(--space-4) 0;
+}
+
+.atlas-timeline-pane {
+  margin-bottom: var(--space-4);
+}
+
+.atlas-footer {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+@media (max-width: 860px) {
+  .atlas-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.world-map {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.world-map .country {
+  stroke: var(--color-surface);
+  stroke-width: 0.5;
+  cursor: pointer;
+}
+
+.world-map .country.is-hovered {
+  stroke: var(--color-text);
+  stroke-width: 1.5;
+}
+
+.world-map .country.is-selected {
+  stroke: var(--color-text);
+  stroke-width: 2;
+}
+
+.legend-svg {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+}
+
+.legend-caption {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  fill: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.legend-tick {
+  font-size: 9px;
+  fill: var(--color-text-muted);
+}
+
+.ranking-svg {
+  width: 100%;
+  height: auto;
+}
+
+.zero-axis {
+  stroke: var(--color-border);
+  stroke-dasharray: 2 2;
+}
+
+.zero-axis-label {
+  font-size: 9px;
+  text-anchor: middle;
+  fill: var(--color-text-muted);
+}
+
+.rank-row {
+  cursor: pointer;
+}
+
+.rank-bar {
+  rx: 2;
+}
+
+.rank-name {
+  font-size: 11px;
+  fill: var(--color-text);
+  dominant-baseline: middle;
+}
+
+.rank-value {
+  font-size: 10px;
+  fill: var(--color-text-muted);
+  dominant-baseline: middle;
+}
+
+.rank-row.is-hovered .rank-name,
+.rank-row.is-selected .rank-name {
+  font-weight: 700;
+}
+
+.rank-row.is-selected .rank-bar {
+  stroke: var(--color-text);
+  stroke-width: 1.5;
+}
+
+.timeline-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.timeline-btn {
+  appearance: none;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: 4px;
+  padding: var(--space-1) var(--space-2);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.timeline-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.timeline-current-date {
+  font-weight: 600;
+  font-size: 14px;
+  min-width: 110px;
+  text-align: center;
+}
+
+.timeline-svg {
+  width: 100%;
+  height: auto;
+}
+
+.timeline-axis {
+  stroke: var(--color-border);
+  stroke-width: 2;
+}
+
+.timeline-point {
+  fill: var(--color-surface);
+  stroke: var(--color-text-muted);
+  stroke-width: 1.5;
+  cursor: pointer;
+}
+
+.timeline-point.is-selected {
+  fill: var(--color-accent);
+  stroke: var(--color-accent);
+}
+
+.timeline-selection-marker {
+  fill: none;
+  stroke: var(--color-accent);
+  stroke-width: 1.5;
+  pointer-events: none;
+}
+
+.timeline-year-label {
+  font-size: 10px;
+  fill: var(--color-text-muted);
+}
+
+.info-title {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.info-subtitle {
+  color: var(--color-text-muted);
+  font-size: 11px;
+  margin-bottom: var(--space-2);
+}
+
+.info-empty {
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 2px var(--space-3);
+  margin: 0;
+  font-size: 12px;
+}
+
+.info-grid dt {
+  color: var(--color-text-muted);
+}
+
+.info-grid dd {
+  margin: 0;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.value-positive {
+  color: var(--color-accent);
+}
+
+.value-negative {
+  color: #b5502e;
+}
+
+.country-details {
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-3);
+  display: none;
+}
+
+.country-details.is-visible {
+  display: block;
+}
+
+/* --- Scatterplot (Redesign 2) --- */
+.scatter-svg {
+  width: 100%;
+  height: auto;
+}
+
+.scatter-axis path,
+.scatter-axis line {
+  stroke: var(--color-border);
+}
+
+.scatter-axis text {
+  font-size: 10px;
+  fill: var(--color-text-muted);
+}
+
+.scatter-axis-label {
+  font-size: 11px;
+  fill: var(--color-text-muted);
+}
+
+.scatter-zero-line {
+  stroke: var(--color-text-muted);
+  stroke-width: 1;
+}
+
+.scatter-diagonal {
+  stroke: var(--color-border);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+}
+
+.scatter-diagonal-label {
+  font-size: 10px;
+  fill: var(--color-text-muted);
+  font-style: italic;
+}
+
+.scatter-quadrant-label {
+  font-size: 13px;
+  fill: var(--color-text-muted);
+  font-weight: 700;
+  opacity: 0.6;
+}
+
+.scatter-points .point {
+  fill: var(--color-accent);
+  fill-opacity: 0.7;
+  stroke: var(--color-surface);
+  stroke-width: 1;
+  cursor: pointer;
+  transition: opacity 200ms ease;
+}
+
+.scatter-points .point.changed-sign {
+  stroke: #b5502e;
+  stroke-width: 2;
+}
+
+.scatter-points.has-focus .point {
+  opacity: 0.25;
+}
+
+.scatter-points.has-focus .point.is-hovered,
+.scatter-points.has-focus .point.is-selected {
+  opacity: 1;
+}
+
+.scatter-points.filter-changed-sign .point:not(.changed-sign) {
+  opacity: 0.12;
+}
+
+.trajectory-path {
+  fill: none;
+  stroke: var(--color-text);
+  stroke-width: 1.5;
+}
+
+.trajectory-point {
+  fill: var(--color-surface);
+  stroke: var(--color-text);
+  stroke-width: 1.5;
+  cursor: pointer;
+}
+
+.trajectory-date-label {
+  font-size: 9px;
+  fill: var(--color-text-muted);
+}
+
+.scatter-filter {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.scatter-legend-note {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin: 0;
+}
