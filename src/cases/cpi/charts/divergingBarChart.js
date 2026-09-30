@@ -44,8 +44,8 @@ export function createDivergingBarChart(container, data, {
   const innerW = width - margin.left - margin.right;
   const x = d3.scaleLinear().domain([-maxAbs, maxAbs]).nice().range([0, innerW]);
 
-  const negColor = "#2a78d6"; // azul - abaixo da linha de corte
-  const posColor = "#e34948"; // vermelho/coral - íntegro (50+)
+  const negColor = "#2a78d6";
+  const posColor = "#e34948";
   const midColor = "#9e9d99";
 
   function render(filterText) {
@@ -86,7 +86,6 @@ export function createDivergingBarChart(container, data, {
       .call((sel) => sel.select(".domain").remove())
       .call((sel) => sel.selectAll("text").attr("fill", "var(--color-text-muted)").attr("font-size", 11));
 
-    // Linha central do zero (corte 50)
     g.append("line")
       .attr("x1", x(0))
       .attr("x2", x(0))
@@ -132,7 +131,6 @@ export function createDivergingBarChart(container, data, {
 
   render("");
 
-  // Legenda
   const legendWrap = wrapOuter.append("div").attr("class", "legend");
   legendWrap.html(`
     <div class="legend-item"><span class="swatch" style="background:${negColor}"></span> ${negLabel}</div>

@@ -1,4 +1,3 @@
-// Re-exporta a instância compartilhada do DuckDB para retrocompatibilidade
 export {
   getDb,
   getConnection,

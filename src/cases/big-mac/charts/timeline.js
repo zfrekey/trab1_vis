@@ -1,5 +1,3 @@
-// Um marcador por data que realmente existe no dataset (nunca uma grade
-// mensal/anual assumida).
 import * as d3 from "d3";
 import { formatDate } from "../../../shared/utils/format.js";
 
@@ -90,7 +88,6 @@ export function createTimeline(container, { onSelect } = {}) {
 
     pointsLayer.selectAll("circle.timeline-point").on("click", (event, d) => selectIndex(dateKeys.indexOf(d)));
 
-    // Reduz os rótulos de ano para não sobrepor (~TARGET_LABEL_COUNT no total).
     const stride = Math.max(1, Math.round(dateKeys.length / TARGET_LABEL_COUNT));
     const labeled = dateKeys.filter((_, i) => i % stride === 0);
 

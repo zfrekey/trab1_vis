@@ -1,6 +1,3 @@
-// Fábrica de estado (sem Redux/etc.): cada redesign chama createAppState()
-// e recebe sua própria instância isolada — dois redesigns na mesma página
-// não devem linkar seleção/hover um do outro.
 export function createAppState() {
   const state = {
     selectedDate: null,
@@ -14,7 +11,6 @@ export function createAppState() {
     return { ...state };
   }
 
-  // Só notifica quando algo muda de fato, evitando re-render à toa.
   function setState(patch) {
     let changed = false;
     for (const key of Object.keys(patch)) {

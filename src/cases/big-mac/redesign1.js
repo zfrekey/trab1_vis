@@ -54,7 +54,6 @@ export async function mountBigMacCase(root) {
   const detailsPanel = createCountryDetailsPanel(detailsPane);
   const legend = createLegend(legendPane);
 
-  // Clicar no país já selecionado (no mapa ou no ranking) desmarca a seleção.
   function toggleSelection(iso) {
     const current = getState().selectedCountry;
     setState({ selectedCountry: iso && iso !== current ? iso : null });
@@ -124,7 +123,6 @@ export async function mountBigMacCase(root) {
     legend.update(colorScale, maxAbs);
     currentDateEl.textContent = formatDate(new Date(`${dateKey}T00:00:00`));
 
-    // Reaplica destaque/painel: os números do país selecionado mudaram de data.
     applyState(getState());
   }
 
@@ -136,8 +134,6 @@ export async function mountBigMacCase(root) {
     d3.json(WORLD_ATLAS_URL),
   ]);
 
-  // Topologia -> features GeoJSON; associação com os dados econômicos por
-  // ISO alpha-3 acontece em data/geoJoin.js (inclui as exceções documentadas lá).
   features = topojson.feature(worldTopology, worldTopology.objects.countries).features;
 
   setState({ selectedDate: latestDate });

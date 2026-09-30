@@ -1,9 +1,5 @@
-// Conteúdo do tooltip/painel do Redesign 2 (raw x adjusted). Reaproveita
-// as classes .info-* já definidas em case.css para o Redesign 1.
 import { formatPercent, formatPercentagePoints, formatUsd } from "../../../shared/utils/format.js";
 
-// Classificação derivada dos dados (nunca escrita à mão por país): compara
-// o sinal de USD_raw com o de USD_adjusted.
 export function classifyAdjustment(raw, adjusted) {
   const rawOvervalued = raw >= 0;
   const adjustedOvervalued = adjusted >= 0;

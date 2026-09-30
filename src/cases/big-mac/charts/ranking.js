@@ -21,8 +21,6 @@ export function createRanking(container, { onHover, onLeave, onClick, valueKey =
 
   const xScale = d3.scaleLinear();
 
-  // undervalued chega do mais negativo pro menos negativo; invertido aqui
-  // para a lista ler de cima a baixo: mais valorizada -> zero -> menos valorizada.
   function update(overvalued, undervalued, colorScale, maxAbs, { duration = 0 } = {}) {
     const bottomRows = [...undervalued].reverse();
     const rows = [...overvalued, { [DIVIDER_KEY]: true }, ...bottomRows];

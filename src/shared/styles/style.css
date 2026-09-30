@@ -1,5 +1,4 @@
-/* Tokens e estilos base compartilhados; estilo específico de cada caso
-   fica no case.css do próprio caso. */
+
 
 :root {
   --color-bg: #faf8f3;
@@ -42,7 +41,6 @@ body {
   min-height: 100vh;
 }
 
-/* Header principal da aplicação */
 .app-header-container {
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
@@ -75,8 +73,6 @@ body {
   font-size: 13px;
   color: var(--color-text-muted);
 }
-
-
 
 .case-main-nav {
   display: flex;
@@ -111,7 +107,6 @@ body {
   border-bottom: 2px solid var(--color-accent);
 }
 
-/* Seções de casos */
 .case-section {
   display: none;
 }

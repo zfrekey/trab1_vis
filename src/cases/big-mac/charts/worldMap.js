@@ -1,16 +1,14 @@
 import * as d3 from "d3";
 
-export const NEGATIVE_COLOR = "#b5502e"; // subvalorizada
-export const ZERO_COLOR = "#f3efe3"; // neutro
-export const POSITIVE_COLOR = "#1f6f6b"; // sobrevalorizada
+export const NEGATIVE_COLOR = "#b5502e";
+export const ZERO_COLOR = "#f3efe3";
+export const POSITIVE_COLOR = "#1f6f6b";
 export const NO_DATA_COLOR = "#d7d2c6";
 const NO_DATA_STROKE = "#b9b3a4";
 
 const VIEW_WIDTH = 720;
 const VIEW_HEIGHT = 420;
 
-// Domínio simétrico [-maxAbs, 0, maxAbs]: mesma magnitude gera mesma
-// saturação dos dois lados, e o 0 cai exatamente na cor neutra central.
 export function createDivergentColorScale(maxAbs) {
   return d3
     .scaleDiverging(d3.interpolateRgbBasis([NEGATIVE_COLOR, ZERO_COLOR, POSITIVE_COLOR]))
@@ -27,8 +25,6 @@ export function createWorldMap(container, { onHover, onLeave, onClick } = {}) {
     .attr("role", "img")
     .attr("aria-label", "Mapa mundial colorido pelo índice Big Mac");
 
-  // País sem observação recebe hachura diagonal em vez de cor sólida, para
-  // não ser confundido visualmente com "valor perto de zero".
   const defs = svg.append("defs");
   const pattern = defs
     .append("pattern")
@@ -47,12 +43,9 @@ export function createWorldMap(container, { onHover, onLeave, onClick } = {}) {
     .attr("stroke", NO_DATA_STROKE)
     .attr("stroke-width", 2);
 
-  // Natural Earth: projeção pensada para mapas temáticos do mundo todo,
-  // ao contrário da Mercator, que distorce muito a área em altas latitudes.
   const projection = d3.geoNaturalEarth1();
   const path = d3.geoPath(projection);
 
-  // Clique no oceano/fundo limpa a seleção fixada.
   svg
     .append("rect")
     .attr("class", "map-background")
@@ -64,8 +57,6 @@ export function createWorldMap(container, { onHover, onLeave, onClick } = {}) {
   const countriesLayer = svg.append("g").attr("class", "countries");
   let fitted = false;
 
-  // Data join com chave iso_a3; a geometria não muda entre datas, então só
-  // a cor é atualizada (com transição quando duration > 0).
   function update(features, colorScale, { duration = 0 } = {}) {
     if (!fitted) {
       projection.fitSize([VIEW_WIDTH, VIEW_HEIGHT], { type: "FeatureCollection", features });

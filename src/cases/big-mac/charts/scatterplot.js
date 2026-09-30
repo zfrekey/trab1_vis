@@ -1,6 +1,3 @@
-// Scatterplot bruto x ajustado: cada país é um ponto, posição é o único
-// canal que carrega dado (sem tamanho variável). Eixos e domínio são fixos
-// (definidos uma vez via setDomain), só a posição dos pontos muda por data.
 import * as d3 from "d3";
 import { formatPercent } from "../../../shared/utils/format.js";
 
@@ -31,8 +28,6 @@ export function createScatterplot(container, { onHover, onLeave, onClick } = {})
 
   const plot = svg.append("g").attr("class", "scatter-plot").attr("transform", `translate(${MARGIN.left},${MARGIN.top})`);
 
-  // Eixos lineares com o MESMO domínio simétrico (definido em setDomain),
-  // para que a diagonal raw = adjusted seja lida de forma consistente.
   const xScale = d3.scaleLinear().range([0, INNER_WIDTH]);
   const yScale = d3.scaleLinear().range([INNER_HEIGHT, 0]);
 
@@ -66,7 +61,6 @@ export function createScatterplot(container, { onHover, onLeave, onClick } = {})
     xAxisGroup.call(d3.axisBottom(xScale).ticks(6).tickFormat(formatPercent));
     yAxisGroup.call(d3.axisLeft(yScale).ticks(6).tickFormat(formatPercent));
 
-    // x=0 e y=0 dividem o plano nos quatro quadrantes analíticos.
     referenceLayer
       .append("line")
       .attr("class", "scatter-zero-line")
@@ -83,8 +77,6 @@ export function createScatterplot(container, { onHover, onLeave, onClick } = {})
       .attr("y1", yScale(0))
       .attr("y2", yScale(0));
 
-    // Diagonal raw = adjusted: pontos sobre ela não mudam de leitura após o
-    // ajuste. Tracejada e discreta, distinta das linhas zero (sólidas).
     referenceLayer
       .append("line")
       .attr("class", "scatter-diagonal")
@@ -126,8 +118,6 @@ export function createScatterplot(container, { onHover, onLeave, onClick } = {})
     pointsLayer.classed("filter-changed-sign", signFilterActive);
   }
 
-  // Data join por iso_a3: a cada troca de data os círculos se movem para a
-  // nova posição (transition), nunca são recriados.
   function update(rows, { duration = 0 } = {}) {
     const selection = pointsLayer
       .selectAll("circle.point")
@@ -153,8 +143,6 @@ export function createScatterplot(container, { onHover, onLeave, onClick } = {})
       .attr("cy", (d) => yScale(d.USD_adjusted));
   }
 
-  // "has-focus" dimming os demais pontos quando há hover OU seleção — o
-  // ponto em foco fica destacado, o resto perde opacidade (não muda de cor).
   function applyHighlight(hoveredIso, selectedIso) {
     pointsLayer.classed("has-focus", Boolean(hoveredIso || selectedIso));
     pointsLayer

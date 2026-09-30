@@ -3,7 +3,7 @@ import { registerLocalFile, query } from "../../../shared/data/duckdb.js";
 const CSV_VIRTUAL_NAME = "corruption_perceptions_index.csv";
 const CSV_URL = `${import.meta.env.BASE_URL}cpi/data/corruption-perceptions-index.csv`;
 
-export const CPI_THRESHOLD = 50; // linha de corte editorial da Transparency International
+export const CPI_THRESHOLD = 50;
 
 let initPromise = null;
 

@@ -1,13 +1,7 @@
-// Trajetória histórica do país selecionado, desenhada no mesmo plano
-// raw x adjusted do scatterplot (reaproveita o grupo/escalas que ele expõe
-// em vez de criar um SVG novo).
 import * as d3 from "d3";
 
 const REVEAL_DURATION = 900;
 
-// Segmentos retos (curva linear), de propósito: uma curva suave como
-// Catmull-Rom sugeriria valores entre observações que não existem no
-// dataset — aqui a clareza analítica importa mais que a estética.
 const line = d3.line();
 
 export function createTrajectory(layer, xScale, yScale) {
@@ -45,8 +39,6 @@ export function createTrajectory(layer, xScale, yScale) {
       .on("mousemove", (event, d) => onPointHover?.(event, d))
       .on("mouseleave", (event, d) => onPointLeave?.(event, d));
 
-    // Rótulo de data só nas pontas (primeira/última observação), senão
-    // fica poluído com 40+ pontos.
     const endpoints = historyRows.length > 1 ? [historyRows[0], historyRows[historyRows.length - 1]] : historyRows;
     pointsGroup
       .selectAll("text.trajectory-date-label")

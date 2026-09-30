@@ -89,12 +89,10 @@ export async function mountBigMacWrapper(root) {
       Object.keys(panes).forEach((k) => {
         panes[k].classList.toggle("is-active", k === target);
       });
-      // Importante para forçar resize do canvas/svg se necessário
       window.dispatchEvent(new Event("resize"));
     });
   });
 
-  // SQL Toggles
   root.querySelectorAll(".sql-toggle").forEach((toggle) => {
     toggle.addEventListener("click", () => {
       const pre = toggle.nextElementSibling;
@@ -105,11 +103,9 @@ export async function mountBigMacWrapper(root) {
     });
   });
 
-  // Mostra as queries
   root.querySelector("#c1-sql-a").textContent = SNAPSHOT_SQL;
   root.querySelector("#c1-sql-b").textContent = RAW_ADJUSTED_SNAPSHOT_SQL;
 
-  // Monta as duas visualizações nos seus respectivos painéis
   await Promise.all([
     mountRedesign1(panes["design-a"].querySelector("#c1-redesign1-root")),
     mountRedesign2(panes["design-b"].querySelector("#c1-redesign2-root"))

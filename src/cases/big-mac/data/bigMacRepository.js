@@ -1,17 +1,12 @@
-// Todo o SQL do Big Mac Index fica aqui, separado do código de desenho.
 import { registerLocalFile, query } from "./duckdb.js";
 
 const CSV_VIRTUAL_NAME = "big_mac.csv";
 const CSV_URL = `${import.meta.env.BASE_URL}big-mac/data/big-mac-full-index.csv`;
 
-// Datas como string 'YYYY-MM-DD' (via strftime) em vez de DATE bruto, para
-// ter uma chave estável e evitar ambiguidade na conversão Arrow -> JS.
 const DATE_KEY_SQL = "strftime(date, '%Y-%m-%d')";
 
 let initPromise = null;
 
-// Idempotente: o CSV só é buscado e parseado uma vez, mesmo chamado por
-// vários gráficos.
 export function initBigMacData() {
   if (!initPromise) {
     initPromise = (async () => {
@@ -68,8 +63,6 @@ export async function getSnapshot(dateKey) {
   return query(SNAPSHOT_SQL, [dateKey]);
 }
 
-// Top/bottom N a partir do snapshot já buscado (sem nova consulta): o
-// RANK() de getSnapshot() já fez o trabalho pesado, aqui só fatiamos.
 export function selectRanking(snapshot, n = 8) {
   return {
     overvalued: snapshot.slice(0, n),
@@ -77,9 +70,6 @@ export function selectRanking(snapshot, n = 8) {
   };
 }
 
-// Maior magnitude entre USD_raw e USD_adjusted em TODO o histórico (não só
-// a data atual), usada como domínio fixo do scatterplot do Redesign 2 -
-// assim os eixos não precisam ser recalculados a cada troca de data.
 export async function getRawAdjustedExtent() {
   const rows = await query(`
     SELECT
@@ -109,9 +99,6 @@ WHERE ${DATE_KEY_SQL} = ?
 ORDER BY iso_a3;
 `.trim();
 
-// Snapshot para o scatterplot bruto x ajustado: só países com os dois
-// índices disponíveis, com o efeito do ajuste e a mudança de sinal já
-// calculados em SQL (derivação de dados evidenciada no DuckDB).
 export async function getRawAdjustedSnapshot(dateKey) {
   return query(RAW_ADJUSTED_SNAPSHOT_SQL, [dateKey]);
 }
@@ -128,8 +115,6 @@ WHERE iso_a3 = ?
 ORDER BY date;
 `.trim();
 
-// Histórico completo de um país, para desenhar a trajetória no espaço
-// raw x adjusted.
 export async function getCountryHistory(isoA3) {
   return query(COUNTRY_HISTORY_SQL, [isoA3]);
 }
