@@ -7,34 +7,24 @@ import {
   getRawAdjustedExtent,
   getRawAdjustedSnapshot,
   getCountryHistory,
+  selectRanking,
 } from "./data/bigMacRepository.js";
 import { buildRecordsByIso } from "./data/geoJoin.js";
 import { createScatterplot } from "./charts/scatterplot.js";
 import { createTrajectory } from "./charts/trajectory.js";
 import { createTimeline } from "./charts/timeline.js";
+import { createRanking } from "./charts/ranking.js";
+import { createDivergentColorScale } from "./charts/worldMap.js";
 import { createTooltip } from "../../shared/components/tooltip.js";
 import { createAppState } from "./appState.js";
 import { formatDate } from "../../shared/utils/format.js";
 import { renderRawAdjustedInfoHtml, renderHistoryPointHtml } from "./components/rawAdjustedDetails.js";
 
 const TRANSITION_DURATION = 650;
+const RANK_TOP_N = 8;
 
 const PAGE_MARKUP = `
   <div class="raw-adjusted">
-    <header class="atlas-header">
-      <p class="atlas-eyebrow">Raw vs Adjusted Explorer</p>
-      <h1 class="atlas-title">Quanto o ajuste econômico altera a leitura da sobre/subvalorização de cada país?</h1>
-      <p class="atlas-intro">
-        Cada ponto é um país: a posição horizontal é o índice bruto do Big Mac,
-        a vertical é o índice ajustado pelo PIB per capita. Fora da diagonal,
-        o ajuste muda a leitura da valorização cambial.
-      </p>
-      <div class="atlas-date-badge">
-        <span class="atlas-date-label">Data atual</span>
-        <span class="atlas-date-value" data-role="current-date"></span>
-      </div>
-    </header>
-
     <div class="atlas-grid">
       <div class="atlas-map-pane" data-role="scatter-pane"></div>
       <aside class="atlas-ranking-pane">
@@ -42,14 +32,12 @@ const PAGE_MARKUP = `
           <button class="button is-active" data-filter="all">Todos</button>
           <button class="button" data-filter="changed">Mudança de sinal</button>
         </div>
-        <p class="scatter-legend-note">Contorno destacado = o ajuste muda o sinal do índice.</p>
+        <p class="scatter-legend-note" style="margin-bottom: 12px;">Contorno destacado = o ajuste muda o sinal do índice.</p>
+        <div data-role="ranking-pane"></div>
         <div class="country-details" data-role="details-pane"></div>
       </aside>
     </div>
-
     <div class="atlas-timeline-pane" data-role="timeline-pane"></div>
-
-    <footer class="atlas-footer">Fonte: The Economist — Big Mac Index.</footer>
   </div>
 `;
 
@@ -61,7 +49,8 @@ export async function mountRawAdjustedExplorer(root) {
   const scatterPane = root.querySelector('[data-role="scatter-pane"]');
   const detailsPane = root.querySelector('[data-role="details-pane"]');
   const timelinePane = root.querySelector('[data-role="timeline-pane"]');
-  const currentDateEl = root.querySelector('[data-role="current-date"]');
+  const rankingPane = root.querySelector('[data-role="ranking-pane"]');
+  const currentDateEl = document.getElementById("c1-date-badge-b");
   const filterButtons = root.querySelectorAll(".scatter-filter .button");
 
   const tooltip = createTooltip(document.body);
@@ -82,6 +71,21 @@ export async function mountRawAdjustedExplorer(root) {
     },
     onClick: (record) => toggleSelection(record?.iso_a3 ?? null),
   });
+
+  const ranking = createRanking(rankingPane, {
+    valueKey: "USD_adjusted",
+    onHover: (event, record) => {
+      tooltip.show(event, renderRawAdjustedInfoHtml(record));
+      setState({ hoveredCountry: record.iso_a3 });
+    },
+    onLeave: () => {
+      tooltip.hide();
+      setState({ hoveredCountry: null });
+    },
+    onClick: (record) => toggleSelection(record?.iso_a3 ?? null),
+  });
+
+  let colorScale;
 
   // Trajetória desenha no mesmo grupo/escalas do scatterplot (mesmo plano
   // raw x adjusted), em vez de um SVG próprio.
@@ -104,9 +108,11 @@ export async function mountRawAdjustedExplorer(root) {
 
   let recordsByIso = new Map();
   let lastHistoryIso = null;
+  let globalMaxAbs = 1.0;
 
   function applyState(state) {
     scatterplot.applyHighlight(state.hoveredCountry, state.selectedCountry);
+    ranking.applyHighlight(state.hoveredCountry, state.selectedCountry);
 
     if (!state.selectedCountry) {
       lastHistoryIso = null;
@@ -149,6 +155,11 @@ export async function mountRawAdjustedExplorer(root) {
 
     const duration = animate ? TRANSITION_DURATION : 0;
     scatterplot.update(rows, { duration });
+
+    const sorted = [...rows].sort((a, b) => b.USD_adjusted - a.USD_adjusted);
+    const { overvalued, undervalued } = selectRanking(sorted, RANK_TOP_N);
+    ranking.update(overvalued, undervalued, colorScale, globalMaxAbs, { duration });
+
     currentDateEl.textContent = formatDate(new Date(`${dateKey}T00:00:00`));
 
     applyState(getState());
@@ -161,6 +172,9 @@ export async function mountRawAdjustedExplorer(root) {
     getLatestDate(),
     getRawAdjustedExtent(),
   ]);
+
+  globalMaxAbs = maxAbs;
+  colorScale = createDivergentColorScale(maxAbs);
 
   // Domínio fixo (histórico completo, não só a data atual): eixos não
   // precisam ser recalculados a cada troca de snapshot.

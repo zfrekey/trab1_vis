@@ -54,9 +54,15 @@
   font-weight: 600;
 }
 
+.atlas-controls-bar {
+  margin-bottom: var(--space-5);
+  display: flex;
+  justify-content: flex-end; /* Align date badge to the right or left, let's just add margin */
+}
+
 .atlas-grid {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+  grid-template-columns: minmax(0, 1.56fr) minmax(320px, 1fr);
   gap: var(--space-4);
   align-items: start;
 }

@@ -3,11 +3,11 @@ import { formatPercent } from "../../../shared/utils/format.js";
 
 const ROW_HEIGHT = 22;
 const DIVIDER_HEIGHT = 30;
-const MARGIN = { top: 12, right: 8, bottom: 12, left: 8 };
-const VIEW_WIDTH = 380;
+const MARGIN = { top: 12, right: 110, bottom: 12, left: 110 };
+const VIEW_WIDTH = 500;
 const DIVIDER_KEY = "__divider__";
 
-export function createRanking(container, { onHover, onLeave, onClick } = {}) {
+export function createRanking(container, { onHover, onLeave, onClick, valueKey = "USD_raw" } = {}) {
   const svg = d3
     .select(container)
     .append("svg")
@@ -79,9 +79,10 @@ export function createRanking(container, { onHover, onLeave, onClick } = {}) {
         return;
       }
       const record = d.row;
-      const isPositive = record.USD_raw >= 0;
+      const val = record[valueKey];
+      const isPositive = val >= 0;
       const barX0 = zeroX;
-      const barX1 = MARGIN.left + xScale(record.USD_raw);
+      const barX1 = MARGIN.left + xScale(val);
       const x = Math.min(barX0, barX1);
       const w = Math.abs(barX1 - barX0);
 
@@ -93,7 +94,7 @@ export function createRanking(container, { onHover, onLeave, onClick } = {}) {
         .attr("width", Math.max(w, 1))
         .attr("height", ROW_HEIGHT * 0.55)
         .attr("y", -ROW_HEIGHT * 0.275)
-        .attr("fill", colorScale(record.USD_raw));
+        .attr("fill", colorScale(val));
 
       sel
         .select("text.rank-name")
@@ -107,7 +108,7 @@ export function createRanking(container, { onHover, onLeave, onClick } = {}) {
         .attr("opacity", 1)
         .attr("text-anchor", isPositive ? "end" : "start")
         .attr("x", isPositive ? barX0 - 6 : barX0 + 6)
-        .text(formatPercent(record.USD_raw));
+        .text(formatPercent(val));
     });
   }
 

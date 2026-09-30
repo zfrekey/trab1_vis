@@ -11,7 +11,7 @@ export function createLegend(container) {
     .select(container)
     .append("svg")
     .attr("class", "legend-svg")
-    .attr("viewBox", "0 0 320 54")
+    .attr("viewBox", "0 0 360 54")
     .attr("preserveAspectRatio", "xMinYMid meet");
 
   const gradientId = "legend-gradient";
@@ -24,7 +24,7 @@ export function createLegend(container) {
 
   const barWidth = 220;
   const barX = 10;
-  const barY = 8;
+  const barY = 16;
 
   svg
     .append("rect")

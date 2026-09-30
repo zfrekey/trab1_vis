@@ -48,27 +48,24 @@ export async function getLatestDate() {
   return rows[0].date_key;
 }
 
-// RANK() calculado em SQL: mapa e ranking compartilham a mesma fonte de
-// verdade para "quem é o #1".
+export const SNAPSHOT_SQL = `
+SELECT
+  iso_a3,
+  currency_code,
+  name,
+  local_price,
+  dollar_ex,
+  dollar_price,
+  USD_raw,
+  USD_adjusted,
+  RANK() OVER (ORDER BY USD_raw DESC) AS rank
+FROM bigmac
+WHERE ${DATE_KEY_SQL} = ?
+ORDER BY USD_raw DESC;
+`.trim();
+
 export async function getSnapshot(dateKey) {
-  return query(
-    `
-    SELECT
-      iso_a3,
-      currency_code,
-      name,
-      local_price,
-      dollar_ex,
-      dollar_price,
-      USD_raw,
-      USD_adjusted,
-      RANK() OVER (ORDER BY USD_raw DESC) AS rank
-    FROM bigmac
-    WHERE ${DATE_KEY_SQL} = ?
-    ORDER BY USD_raw DESC;
-    `,
-    [dateKey],
-  );
+  return query(SNAPSHOT_SQL, [dateKey]);
 }
 
 // Top/bottom N a partir do snapshot já buscado (sem nova consulta): o
@@ -81,7 +78,7 @@ export function selectRanking(snapshot, n = 8) {
 }
 
 // Maior magnitude entre USD_raw e USD_adjusted em TODO o histórico (não só
-// a data atual), usada como domínio fixo do scatterplot do Redesign 2 —
+// a data atual), usada como domínio fixo do scatterplot do Redesign 2 -
 // assim os eixos não precisam ser recalculados a cada troca de data.
 export async function getRawAdjustedExtent() {
   const rows = await query(`
@@ -95,46 +92,44 @@ export async function getRawAdjustedExtent() {
   return Math.max(Math.abs(min_value), Math.abs(max_value));
 }
 
+export const RAW_ADJUSTED_SNAPSHOT_SQL = `
+SELECT
+  iso_a3,
+  name,
+  currency_code,
+  dollar_price,
+  USD_raw,
+  USD_adjusted,
+  USD_adjusted - USD_raw AS adjustment_effect,
+  (USD_raw * USD_adjusted < 0) AS changed_sign
+FROM bigmac
+WHERE ${DATE_KEY_SQL} = ?
+  AND USD_raw IS NOT NULL
+  AND USD_adjusted IS NOT NULL
+ORDER BY iso_a3;
+`.trim();
+
 // Snapshot para o scatterplot bruto x ajustado: só países com os dois
 // índices disponíveis, com o efeito do ajuste e a mudança de sinal já
 // calculados em SQL (derivação de dados evidenciada no DuckDB).
 export async function getRawAdjustedSnapshot(dateKey) {
-  return query(
-    `
-    SELECT
-      iso_a3,
-      name,
-      currency_code,
-      dollar_price,
-      USD_raw,
-      USD_adjusted,
-      USD_adjusted - USD_raw AS adjustment_effect,
-      (USD_raw * USD_adjusted < 0) AS changed_sign
-    FROM bigmac
-    WHERE ${DATE_KEY_SQL} = ?
-      AND USD_raw IS NOT NULL
-      AND USD_adjusted IS NOT NULL
-    ORDER BY iso_a3;
-    `,
-    [dateKey],
-  );
+  return query(RAW_ADJUSTED_SNAPSHOT_SQL, [dateKey]);
 }
+
+export const COUNTRY_HISTORY_SQL = `
+SELECT
+  ${DATE_KEY_SQL} AS date_key,
+  USD_raw,
+  USD_adjusted
+FROM bigmac
+WHERE iso_a3 = ?
+  AND USD_raw IS NOT NULL
+  AND USD_adjusted IS NOT NULL
+ORDER BY date;
+`.trim();
 
 // Histórico completo de um país, para desenhar a trajetória no espaço
 // raw x adjusted.
 export async function getCountryHistory(isoA3) {
-  return query(
-    `
-    SELECT
-      ${DATE_KEY_SQL} AS date_key,
-      USD_raw,
-      USD_adjusted
-    FROM bigmac
-    WHERE iso_a3 = ?
-      AND USD_raw IS NOT NULL
-      AND USD_adjusted IS NOT NULL
-    ORDER BY date;
-    `,
-    [isoA3],
-  );
+  return query(COUNTRY_HISTORY_SQL, [isoA3]);
 }

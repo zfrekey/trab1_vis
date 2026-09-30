@@ -1,162 +1,117 @@
-import * as d3 from "d3";
-import * as topojson from "topojson-client";
-import "./case.css";
+import { mountBigMacCase as mountRedesign1 } from "./redesign1.js";
+import { mountRawAdjustedExplorer as mountRedesign2 } from "./redesign2.js";
+import { SNAPSHOT_SQL, RAW_ADJUSTED_SNAPSHOT_SQL } from "./data/bigMacRepository.js";
 
-import {
-  initBigMacData,
-  getAvailableDates,
-  getLatestDate,
-  getSnapshot,
-  selectRanking,
-} from "./data/bigMacRepository.js";
-import { buildRecordsByIso, joinFeaturesWithRecords } from "./data/geoJoin.js";
-import { createWorldMap, createDivergentColorScale } from "./charts/worldMap.js";
-import { createRanking } from "./charts/ranking.js";
-import { createTimeline } from "./charts/timeline.js";
-import { createLegend } from "./components/legend.js";
-import { createCountryDetailsPanel, renderCountryInfoHtml } from "./components/countryDetails.js";
-import { createTooltip } from "../../shared/components/tooltip.js";
-import { createAppState } from "./appState.js";
-import { formatDate } from "../../shared/utils/format.js";
-
-const WORLD_ATLAS_URL = `${import.meta.env.BASE_URL}big-mac/data/world-atlas-50m.json`;
-const RANK_TOP_N = 8;
-const TRANSITION_DURATION = 550;
-
-const PAGE_MARKUP = `
-  <div class="atlas">
-    <header class="atlas-header">
-      <p class="atlas-eyebrow">Global Currency Atlas</p>
-      <h1 class="atlas-title">Onde o Big Mac sugere moedas mais sobrevalorizadas e subvalorizadas?</h1>
-      <p class="atlas-intro">
-        O Big Mac Index compara o preço de um mesmo produto entre países como
-        uma forma simples de observar diferenças de poder de compra e
-        valorização cambial.
-      </p>
-      <div class="atlas-date-badge">
-        <span class="atlas-date-label">Data atual</span>
-        <span class="atlas-date-value" data-role="current-date"></span>
-      </div>
+const MARKUP = `
+  <div class="case-container">
+    <header class="case-header">
+      <p class="case-eyebrow">Caso 1 · Economia e Poder de Compra</p>
+      <h1 class="case-title">Big Mac Index: Paridade do Poder de Compra na prática</h1>
     </header>
 
-    <div class="atlas-grid">
-      <div class="atlas-map-pane" data-role="map-pane"></div>
-      <aside class="atlas-ranking-pane">
-        <div data-role="ranking-pane"></div>
-        <div class="country-details" data-role="details-pane"></div>
-      </aside>
+    <div class="case-intro-card">
+      <div class="meta">
+        <strong>Original:</strong> <a href="https://www.economist.com/big-mac-index" target="_blank" rel="noopener">"The Big Mac Index"</a>, The Economist.
+      </div>
+      <p><strong>Pergunta central:</strong> Como as moedas ao redor do mundo estão valorizadas ou subvalorizadas em relação ao Dólar americano, segundo a teoria da Paridade do Poder de Compra (PPC)?</p>
+      <p><strong>Problemas fundamentais do original:</strong></p>
+      <ul>
+        <li><strong>Falta de contexto geoespacial e histórico:</strong> o índice é frequentemente publicado como um ranking em barras estático (ou interatividade limitada a uma única data), ocultando clusters regionais e tendências evolutivas ao longo de décadas.</li>
+        <li><strong>Análise bidimensional ausente:</strong> embora a publicação calcule a diferença pelo PIB per capita, raramente se contrasta visualmente o índice bruto contra o ajustado no mesmo espaço, o que esconde o fato de que moedas "subvalorizadas" muitas vezes se tornam sobrevalorizadas quando o nível de renda é levado em conta.</li>
+      </ul>
     </div>
 
-    <div class="atlas-legend-row" data-role="legend-pane"></div>
-    <div class="atlas-timeline-pane" data-role="timeline-pane"></div>
+    <nav class="tabs-nav" role="tablist">
+      <button class="tab-btn is-active" data-tab="design-a">Design A - Global Currency Atlas</button>
+      <button class="tab-btn" data-tab="design-b">Design B - Raw vs Adjusted Explorer</button>
+    </nav>
 
-    <footer class="atlas-footer">Fonte: The Economist — Big Mac Index.</footer>
+    <!-- Painel Design A -->
+    <div id="c1-panel-design-a" class="tab-pane is-active">
+      <div class="chart-card">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-3);">
+          <div>
+            <h3 style="margin-bottom: 4px;">Design A - Global Currency Atlas</h3>
+            <p class="caption" style="margin-top: 0;">Visão geoespacial sincronizada com ranking e linha do tempo navegável (últimas décadas).</p>
+          </div>
+          <div class="atlas-date-badge">
+            <span class="atlas-date-label">Data atual</span>
+            <span class="atlas-date-value" id="c1-date-badge-a"></span>
+          </div>
+        </div>
+        <div id="c1-redesign1-root"></div>
+        <div class="why">
+          <b>Por que esse desenho:</b> Uma abordagem interativa baseada em mapa permite visualizar imediatamente clusters regionais, enquanto o ranking e a linha do tempo conectada evidenciam as oscilações cambiais ao longo dos anos.
+        </div>
+        <div class="sql-toggle">▼ ver consulta SQL usada no DuckDB</div>
+        <pre class="sql-code" id="c1-sql-a"></pre>
+      </div>
+    </div>
+
+    <!-- Painel Design B -->
+    <div id="c1-panel-design-b" class="tab-pane">
+      <div class="chart-card">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-3);">
+          <div>
+            <h3 style="margin-bottom: 4px;">Design B - Raw vs Adjusted Explorer</h3>
+            <p class="caption" style="margin-top: 0;">Scatterplot interativo contrastando o índice bruto versus o ajustado pelo PIB per capita.</p>
+          </div>
+          <div class="atlas-date-badge">
+            <span class="atlas-date-label">Data atual</span>
+            <span class="atlas-date-value" id="c1-date-badge-b"></span>
+          </div>
+        </div>
+        <div id="c1-redesign2-root"></div>
+        <div class="why">
+          <b>Por que esse desenho:</b> Isolar as duas variáveis (bruto x ajustado) num gráfico de dispersão com uma linha neutra (x=0, y=0) permite descobrir de imediato que muitas moedas consideradas "subvalorizadas" na versão clássica são, na verdade, sobrevalorizadas quando ajustadas pela renda local.
+        </div>
+        <div class="sql-toggle">▼ ver consulta SQL usada no DuckDB</div>
+        <pre class="sql-code" id="c1-sql-b"></pre>
+      </div>
+    </div>
   </div>
 `;
 
-export async function mountBigMacCase(root) {
-  root.innerHTML = PAGE_MARKUP;
+export async function mountBigMacWrapper(root) {
+  root.innerHTML = MARKUP;
 
-  const { getState, setState, subscribe } = createAppState();
+  const tabs = root.querySelectorAll(".tabs-nav .tab-btn");
+  const panes = {
+    "design-a": root.querySelector("#c1-panel-design-a"),
+    "design-b": root.querySelector("#c1-panel-design-b"),
+  };
 
-  const mapPane = root.querySelector('[data-role="map-pane"]');
-  const rankingPane = root.querySelector('[data-role="ranking-pane"]');
-  const detailsPane = root.querySelector('[data-role="details-pane"]');
-  const legendPane = root.querySelector('[data-role="legend-pane"]');
-  const timelinePane = root.querySelector('[data-role="timeline-pane"]');
-  const currentDateEl = root.querySelector('[data-role="current-date"]');
-
-  const tooltip = createTooltip(document.body);
-  const detailsPanel = createCountryDetailsPanel(detailsPane);
-  const legend = createLegend(legendPane);
-
-  // Clicar no país já selecionado (no mapa ou no ranking) desmarca a seleção.
-  function toggleSelection(iso) {
-    const current = getState().selectedCountry;
-    setState({ selectedCountry: iso && iso !== current ? iso : null });
-  }
-
-  const worldMap = createWorldMap(mapPane, {
-    onHover: (event, feature) => {
-      const record = feature.properties.record;
-      const displayName = record?.name ?? feature.properties.name;
-      tooltip.show(event, renderCountryInfoHtml(displayName, record));
-      setState({ hoveredCountry: feature.properties.iso_a3 });
-    },
-    onLeave: () => {
-      tooltip.hide();
-      setState({ hoveredCountry: null });
-    },
-    onClick: (feature) => toggleSelection(feature?.properties?.iso_a3 ?? null),
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      tabs.forEach((t) => t.classList.remove("is-active"));
+      tab.classList.add("is-active");
+      const target = tab.dataset.tab;
+      Object.keys(panes).forEach((k) => {
+        panes[k].classList.toggle("is-active", k === target);
+      });
+      // Importante para forçar resize do canvas/svg se necessário
+      window.dispatchEvent(new Event("resize"));
+    });
   });
 
-  const ranking = createRanking(rankingPane, {
-    onHover: (event, record) => {
-      tooltip.show(event, renderCountryInfoHtml(record.name, record));
-      setState({ hoveredCountry: record.iso_a3 });
-    },
-    onLeave: () => {
-      tooltip.hide();
-      setState({ hoveredCountry: null });
-    },
-    onClick: (record) => toggleSelection(record.iso_a3),
+  // SQL Toggles
+  root.querySelectorAll(".sql-toggle").forEach((toggle) => {
+    toggle.addEventListener("click", () => {
+      const pre = toggle.nextElementSibling;
+      pre.classList.toggle("open");
+      toggle.textContent = pre.classList.contains("open")
+        ? "▲ ocultar consulta SQL"
+        : "▼ ver consulta SQL usada no DuckDB";
+    });
   });
 
-  const timeline = createTimeline(timelinePane, {
-    onSelect: (dateKey) => {
-      setState({ selectedDate: dateKey });
-      loadDate(dateKey, { animate: true });
-    },
-  });
+  // Mostra as queries
+  root.querySelector("#c1-sql-a").textContent = SNAPSHOT_SQL;
+  root.querySelector("#c1-sql-b").textContent = RAW_ADJUSTED_SNAPSHOT_SQL;
 
-  let recordsByIso = new Map();
-  let features = [];
-
-  function applyState(state) {
-    worldMap.applyHighlight(state.hoveredCountry, state.selectedCountry);
-    ranking.applyHighlight(state.hoveredCountry, state.selectedCountry);
-
-    if (state.selectedCountry) {
-      const record = recordsByIso.get(state.selectedCountry) ?? null;
-      detailsPanel.show(record?.name ?? state.selectedCountry, record);
-    } else {
-      detailsPanel.clear();
-    }
-  }
-  subscribe(applyState);
-
-  async function loadDate(dateKey, { animate }) {
-    const snapshot = await getSnapshot(dateKey);
-    recordsByIso = buildRecordsByIso(snapshot);
-
-    const maxAbs = d3.max(snapshot, (d) => Math.abs(d.USD_raw)) ?? 1;
-    const colorScale = createDivergentColorScale(maxAbs);
-    const joinedFeatures = joinFeaturesWithRecords(features, recordsByIso);
-    const { overvalued, undervalued } = selectRanking(snapshot, RANK_TOP_N);
-
-    const duration = animate ? TRANSITION_DURATION : 0;
-    worldMap.update(joinedFeatures, colorScale, { duration });
-    ranking.update(overvalued, undervalued, colorScale, maxAbs, { duration });
-    legend.update(colorScale, maxAbs);
-    currentDateEl.textContent = formatDate(new Date(`${dateKey}T00:00:00`));
-
-    // Reaplica destaque/painel: os números do país selecionado mudaram de data.
-    applyState(getState());
-  }
-
-  await initBigMacData();
-
-  const [dates, latestDate, worldTopology] = await Promise.all([
-    getAvailableDates(),
-    getLatestDate(),
-    d3.json(WORLD_ATLAS_URL),
+  // Monta as duas visualizações nos seus respectivos painéis
+  await Promise.all([
+    mountRedesign1(panes["design-a"].querySelector("#c1-redesign1-root")),
+    mountRedesign2(panes["design-b"].querySelector("#c1-redesign2-root"))
   ]);
-
-  // Topologia -> features GeoJSON; associação com os dados econômicos por
-  // ISO alpha-3 acontece em data/geoJoin.js (inclui as exceções documentadas lá).
-  features = topojson.feature(worldTopology, worldTopology.objects.countries).features;
-
-  setState({ selectedDate: latestDate });
-  timeline.render(dates, latestDate);
-  await loadDate(latestDate, { animate: false });
 }

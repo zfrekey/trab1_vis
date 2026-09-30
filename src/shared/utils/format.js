@@ -23,32 +23,32 @@ const pointsFormatter = new Intl.NumberFormat("pt-BR", {
 
 // CSV guarda o índice como proporção (-0.25 = -25%); aqui vira percentual.
 export function formatPercent(value) {
-  if (value === null || value === undefined || Number.isNaN(value)) return "—";
+  if (value === null || value === undefined || Number.isNaN(value)) return "-";
   return percentFormatter.format(value);
 }
 
 export function formatPrice(value, currencyCode) {
-  if (value === null || value === undefined || Number.isNaN(value)) return "—";
+  if (value === null || value === undefined || Number.isNaN(value)) return "-";
   return `${priceFormatter.format(value)} ${currencyCode ?? ""}`.trim();
 }
 
 export function formatUsd(value) {
-  if (value === null || value === undefined || Number.isNaN(value)) return "—";
+  if (value === null || value === undefined || Number.isNaN(value)) return "-";
   return `US$ ${priceFormatter.format(value)}`;
 }
 
 export function formatDate(date) {
-  if (!date) return "—";
+  if (!date) return "-";
   return dateFormatter.format(date);
 }
 
 export function formatOrdinal(rank) {
-  if (rank === null || rank === undefined) return "—";
+  if (rank === null || rank === undefined) return "-";
   return `${rank}º`;
 }
 
 // Diferença entre dois índices (ex: adjustment_effect), em pontos percentuais.
 export function formatPercentagePoints(value) {
-  if (value === null || value === undefined || Number.isNaN(value)) return "—";
+  if (value === null || value === undefined || Number.isNaN(value)) return "-";
   return `${pointsFormatter.format(value * 100)} p.p.`;
 }
