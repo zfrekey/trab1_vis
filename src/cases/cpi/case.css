@@ -1,0 +1,228 @@
+/* Estilos do Caso 2 - Índice de Percepção da Corrupção (CPI) */
+
+.case-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-3);
+}
+
+.case-header {
+  max-width: 800px;
+  margin: 0 auto var(--space-4);
+  text-align: center;
+}
+
+.case-eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-1);
+  font-weight: 600;
+}
+
+.case-title {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  line-height: 1.25;
+  margin: 0 0 var(--space-2);
+}
+
+.case-intro-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.case-intro-card .meta {
+  color: var(--color-text-muted);
+  font-size: 13px;
+  margin-bottom: var(--space-2);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.case-intro-card .meta a {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+.case-intro-card ul {
+  margin: var(--space-2) 0;
+  padding-left: 20px;
+}
+
+.case-intro-card li {
+  margin-bottom: 4px;
+}
+
+.tabs-nav {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.tabs-nav .tab-btn {
+  flex: 1;
+  min-width: 180px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 150ms ease;
+  text-align: center;
+}
+
+.tabs-nav .tab-btn:hover {
+  border-color: var(--color-accent);
+  color: var(--color-text);
+}
+
+.tabs-nav .tab-btn.is-active {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 8%, var(--color-surface));
+  font-weight: 600;
+}
+
+.tab-pane {
+  display: none;
+}
+
+.tab-pane.is-active {
+  display: block;
+}
+
+.chart-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.chart-card h3 {
+  margin: 0 0 var(--space-1);
+  font-family: var(--font-serif);
+  font-size: 18px;
+}
+
+.chart-card .caption {
+  color: var(--color-text-muted);
+  font-size: 13.5px;
+  margin: 0 0 var(--space-3);
+  line-height: 1.5;
+}
+
+.chart-card .why {
+  color: var(--color-text);
+  font-size: 13.5px;
+  border-top: 1px dashed var(--color-border);
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  line-height: 1.55;
+  background: color-mix(in srgb, var(--color-bg) 50%, var(--color-surface));
+  padding: var(--space-3);
+  border-radius: 6px;
+}
+
+.chart-card .why b {
+  color: var(--color-accent);
+}
+
+.controls-row {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  margin-bottom: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.controls-row .search-input {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 13px;
+  min-width: 250px;
+}
+
+.controls-row .search-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.controls-row .hint {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.chart-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+  margin-top: var(--space-2);
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-item .swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.sql-toggle {
+  margin-top: var(--space-3);
+  font-size: 12px;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sql-toggle:hover {
+  color: var(--color-accent);
+}
+
+pre.sql-code {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: var(--space-2) var(--space-3);
+  font-size: 12px;
+  font-family: monospace;
+  overflow-x: auto;
+  color: var(--color-text);
+  display: none;
+  margin-top: var(--space-2);
+}
+
+pre.sql-code.open {
+  display: block;
+}
