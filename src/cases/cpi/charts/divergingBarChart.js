@@ -1,5 +1,6 @@
 import * as d3 from "d3";
 
+// Barras centradas no desvio em relação ao corte, com busca por país.
 export function createDivergingBarChart(container, data, {
   labelKey = "country",
   valueKey = "diff_vs_threshold",
@@ -44,10 +45,11 @@ export function createDivergingBarChart(container, data, {
   const innerW = width - margin.left - margin.right;
   const x = d3.scaleLinear().domain([-maxAbs, maxAbs]).nice().range([0, innerW]);
 
-  const negColor = "#2a78d6";
-  const posColor = "#e34948";
+  const negColor = "#2a78d6"; // azul - abaixo da linha de corte
+  const posColor = "#e34948"; // vermelho/coral - íntegro (50+)
   const midColor = "#9e9d99";
 
+  // Filtra os países e redesenha eixos, barras e rótulos para o resultado.
   function render(filterText) {
     const rows = filterText
       ? data.filter((d) => d[labelKey].toLowerCase().includes(filterText))
@@ -86,6 +88,7 @@ export function createDivergingBarChart(container, data, {
       .call((sel) => sel.select(".domain").remove())
       .call((sel) => sel.selectAll("text").attr("fill", "var(--color-text-muted)").attr("font-size", 11));
 
+    // Linha central do zero (corte 50)
     g.append("line")
       .attr("x1", x(0))
       .attr("x2", x(0))
@@ -131,6 +134,7 @@ export function createDivergingBarChart(container, data, {
 
   render("");
 
+  // Legenda das categorias abaixo e acima do corte.
   const legendWrap = wrapOuter.append("div").attr("class", "legend");
   legendWrap.html(`
     <div class="legend-item"><span class="swatch" style="background:${negColor}"></span> ${negLabel}</div>

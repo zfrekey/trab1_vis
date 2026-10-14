@@ -1,4 +1,4 @@
-
+/* Estilos do Caso 2 - Índice de Percepção da Corrupção (CPI) */
 
 .case-container {
   max-width: 1100px;
@@ -6,6 +6,7 @@
   padding: var(--space-5) var(--space-3);
 }
 
+/* Título, introdução e navegação entre designs. */
 .case-header {
   max-width: 800px;
   margin: 0 auto var(--space-4);
@@ -102,6 +103,7 @@
   display: block;
 }
 
+/* Conteúdo dos gráficos e controles associados. */
 .chart-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -195,6 +197,7 @@
   display: inline-block;
 }
 
+/* Consulta SQL exibida sob demanda. */
 .sql-toggle {
   margin-top: var(--space-3);
   font-size: 12px;

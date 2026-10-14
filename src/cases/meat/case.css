@@ -1,5 +1,6 @@
+/* Estilos do Caso 3 - Produção Mundial de Carne */
 
-
+/* Grade responsiva e cabeçalhos dos pequenos múltiplos. */
 .small-multiples-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));

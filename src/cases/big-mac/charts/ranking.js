@@ -7,6 +7,7 @@ const MARGIN = { top: 12, right: 110, bottom: 12, left: 110 };
 const VIEW_WIDTH = 500;
 const DIVIDER_KEY = "__divider__";
 
+// Cria o ranking divergente e permite sincronizar país em foco ou selecionado.
 export function createRanking(container, { onHover, onLeave, onClick, valueKey = "USD_raw" } = {}) {
   const svg = d3
     .select(container)
@@ -21,7 +22,10 @@ export function createRanking(container, { onHover, onLeave, onClick, valueKey =
 
   const xScale = d3.scaleLinear();
 
+  // undervalued chega do mais negativo pro menos negativo; invertido aqui
+  // para a lista ler de cima a baixo: mais valorizada -> zero -> menos valorizada.
   function update(overvalued, undervalued, colorScale, maxAbs, { duration = 0 } = {}) {
+    // Posiciona extremos em lados opostos do zero e preserva a ordem visual.
     const bottomRows = [...undervalued].reverse();
     const rows = [...overvalued, { [DIVIDER_KEY]: true }, ...bottomRows];
 

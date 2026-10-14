@@ -23,6 +23,7 @@ import { renderRawAdjustedInfoHtml, renderHistoryPointHtml } from "./components/
 const TRANSITION_DURATION = 650;
 const RANK_TOP_N = 8;
 
+// Estrutura do comparativo, filtros, ranking, detalhes e linha do tempo.
 const PAGE_MARKUP = `
   <div class="raw-adjusted">
     <div class="atlas-grid">
@@ -42,6 +43,7 @@ const PAGE_MARKUP = `
 `;
 
 export async function mountRawAdjustedExplorer(root) {
+  // Monta os gráficos e sincroniza foco, seleção e data neste redesign.
   root.innerHTML = PAGE_MARKUP;
 
   const { getState, setState, subscribe } = createAppState();
@@ -87,6 +89,8 @@ export async function mountRawAdjustedExplorer(root) {
 
   let colorScale;
 
+  // Trajetória desenha no mesmo grupo/escalas do scatterplot (mesmo plano
+  // raw x adjusted), em vez de um SVG próprio.
   const trajectory = createTrajectory(scatterplot.trajectoryLayer, scatterplot.xScale, scatterplot.yScale);
 
   const timeline = createTimeline(timelinePane, {
@@ -126,6 +130,8 @@ export async function mountRawAdjustedExplorer(root) {
       detailsPane.classList.add("is-visible");
     }
 
+    // Histórico só é buscado quando a seleção MUDA, não a cada hover nem a
+    // cada troca de data (a trajetória é contexto estável entre snapshots).
     if (state.selectedCountry !== lastHistoryIso) {
       lastHistoryIso = state.selectedCountry;
       loadHistory(state.selectedCountry, record?.name ?? state.selectedCountry);
@@ -135,7 +141,7 @@ export async function mountRawAdjustedExplorer(root) {
 
   async function loadHistory(isoA3, displayName) {
     const history = await getCountryHistory(isoA3);
-    if (getState().selectedCountry !== isoA3) return;
+    if (getState().selectedCountry !== isoA3) return; // seleção mudou enquanto a consulta rodava
     trajectory.show(history, {
       onPointHover: (event, point) => {
         const dateLabel = formatDate(new Date(`${point.date_key}T00:00:00`));
@@ -146,6 +152,7 @@ export async function mountRawAdjustedExplorer(root) {
   }
 
   async function loadDate(dateKey, { animate }) {
+    // Recalcula posições e ranking para o snapshot selecionado.
     const rows = await getRawAdjustedSnapshot(dateKey);
     recordsByIso = buildRecordsByIso(rows);
 
@@ -172,6 +179,8 @@ export async function mountRawAdjustedExplorer(root) {
   globalMaxAbs = maxAbs;
   colorScale = createDivergentColorScale(maxAbs);
 
+  // Domínio fixo (histórico completo, não só a data atual): eixos não
+  // precisam ser recalculados a cada troca de snapshot.
   scatterplot.setDomain(maxAbs);
 
   setState({ selectedDate: latestDate });

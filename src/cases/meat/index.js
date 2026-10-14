@@ -1,5 +1,5 @@
 import "./case.css";
-import "../cpi/case.css";
+import "../cpi/case.css"; // reaproveita estrutura de layout, tabs, cards e botões
 import {
   initMeatData,
   case3DesignAData,
@@ -11,6 +11,7 @@ import { createMultiLineIndexed } from "./charts/multiLineIndexed.js";
 import { createSmallMultiples } from "./charts/smallMultiples.js";
 import { createTooltip } from "../../shared/components/tooltip.js";
 
+// Estrutura das abas, explicação do caso e áreas dos gráficos.
 const MARKUP = `
   <div class="case-container">
     <header class="case-header">
@@ -67,10 +68,12 @@ const MARKUP = `
 `;
 
 export async function mountMeatCase(root) {
+  // Carrega as séries uma vez e monta os dois designs de visualização.
   root.innerHTML = MARKUP;
 
   const tooltip = createTooltip(document.body);
 
+  // Tab switching
   const tabs = root.querySelectorAll(".tabs-nav .tab-btn");
   const panes = {
     "design-a": root.querySelector("#c3-panel-design-a"),
@@ -88,6 +91,7 @@ export async function mountMeatCase(root) {
     });
   });
 
+  // SQL Toggles
   root.querySelectorAll(".sql-toggle").forEach((toggle) => {
     toggle.addEventListener("click", () => {
       const pre = toggle.nextElementSibling;
@@ -98,6 +102,7 @@ export async function mountMeatCase(root) {
     });
   });
 
+  // Carrega os dados e monta os gráficos
   await initMeatData();
 
   const [indexedData, rawData] = await Promise.all([
@@ -105,6 +110,7 @@ export async function mountMeatCase(root) {
     case3DesignBData(),
   ]);
 
+  // Design A (Linhas indexadas)
   createMultiLineIndexed(root.querySelector("#c3-chart-a"), indexedData, {
     xKey: "year",
     seriesKeys: MEAT_TYPES,
@@ -112,6 +118,7 @@ export async function mountMeatCase(root) {
   });
   root.querySelector("#c3-sql-a").textContent = CASE3_BASE_SQL;
 
+  // Design B (Pequenos múltiplos)
   createSmallMultiples(root.querySelector("#c3-chart-b"), rawData, {
     xKey: "year",
     seriesKeys: MEAT_TYPES,

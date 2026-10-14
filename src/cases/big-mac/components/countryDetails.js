@@ -1,6 +1,7 @@
 import * as d3 from "d3";
 import { formatPercent, formatPrice, formatUsd, formatOrdinal } from "../../../shared/utils/format.js";
 
+// Monta o conteúdo do tooltip e do painel fixo a partir de um registro.
 export function renderCountryInfoHtml(displayName, record) {
   if (!record) {
     return `
@@ -29,6 +30,7 @@ function indexClass(value) {
   return value >= 0 ? "value-positive" : "value-negative";
 }
 
+// Controla a visibilidade dos detalhes do país selecionado.
 export function createCountryDetailsPanel(container) {
   const el = d3.select(container);
 

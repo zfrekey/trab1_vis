@@ -1,5 +1,6 @@
 import { registerLocalFile, query } from "../../../shared/data/duckdb.js";
 
+// Tipos, rótulos e consultas da produção mundial de carne.
 const CSV_VIRTUAL_NAME = "meat_by_type.csv";
 const CSV_URL = `${import.meta.env.BASE_URL}meat/data/meat-by-type.csv`;
 
@@ -58,6 +59,7 @@ export async function case3BaseData() {
   return query(CASE3_BASE_SQL);
 }
 
+// Converte os volumes em índice relativo ao primeiro ano da série.
 export async function case3DesignAData() {
   const rows = await case3BaseData();
   const base = rows[0];
@@ -70,6 +72,7 @@ export async function case3DesignAData() {
   });
 }
 
+// Mantém os valores originais para os pequenos múltiplos.
 export async function case3DesignBData() {
   return case3BaseData();
 }

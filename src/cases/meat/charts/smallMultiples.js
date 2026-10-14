@@ -3,6 +3,7 @@ import { MEAT_LABELS } from "../data/meatRepository.js";
 
 const PALETTE = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#7c4dff"];
 
+// Cria um gráfico independente para cada tipo de carne e sua escala própria.
 export function createSmallMultiples(container, data, {
   xKey = "year",
   seriesKeys,
@@ -15,6 +16,7 @@ export function createSmallMultiples(container, data, {
   const colorScale = d3.scaleOrdinal().domain(seriesKeys).range(PALETTE);
 
   seriesKeys.forEach((key) => {
+    // Cada painel usa os anos e volumes válidos apenas para sua série.
     const label = MEAT_LABELS[key] || key;
     const facet = grid.append("div").attr("class", "facet-card");
     const facetHeader = facet.append("div").attr("class", "facet-header");
@@ -43,12 +45,14 @@ export function createSmallMultiples(container, data, {
     const x = d3.scaleLinear().domain(d3.extent(rows, (d) => d[xKey])).range([0, innerW]);
     const y = d3.scaleLinear().domain([0, maxVal]).nice().range([innerH, 0]);
 
+    // Eixo X
     g.append("g")
       .attr("class", "axis")
       .attr("transform", `translate(0,${innerH})`)
       .call(d3.axisBottom(x).ticks(4).tickFormat(d3.format("d")))
       .call((sel) => sel.selectAll("text").attr("fill", "var(--color-text-muted)").attr("font-size", 9));
 
+    // Eixo Y
     g.append("g")
       .attr("class", "axis")
       .call(d3.axisLeft(y).ticks(3, "~s"))
@@ -64,6 +68,7 @@ export function createSmallMultiples(container, data, {
       .attr("stroke-width", 2.2)
       .attr("d", line);
 
+    // O overlay identifica o ano mais próximo para mostrar o volume.
     const overlay = g.append("rect")
       .attr("width", innerW)
       .attr("height", innerH)

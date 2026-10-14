@@ -1,5 +1,6 @@
 import * as d3 from "d3";
 
+// Distribui cada país por região e posiciona o ponto conforme a nota CPI.
 export function createStripPlot(container, data, {
   xKey = "score",
   groupKey = "region",
@@ -10,6 +11,7 @@ export function createStripPlot(container, data, {
   container.innerHTML = "";
   const wrapOuter = d3.select(container);
 
+  // Ordena as regiões pela média da nota CPI, da maior para a menor.
   const groups = [...new Set(data.map((d) => d[groupKey]))].sort((a, b) => {
     const avg = (reg) => d3.mean(data.filter((d) => d[groupKey] === reg), (d) => d[xKey]);
     return avg(b) - avg(a);
@@ -32,6 +34,7 @@ export function createStripPlot(container, data, {
   const x = d3.scaleLinear().domain([0, 100]).range([0, innerW]);
   const y = d3.scaleBand().domain(groups).range([0, groups.length * rowH]).paddingInner(0.2);
 
+  // Eixo X no topo com linhas de grade
   g.append("g")
     .attr("class", "axis")
     .call(d3.axisTop(x).ticks(5))
@@ -39,6 +42,7 @@ export function createStripPlot(container, data, {
     .call((sel) => sel.select(".domain").remove())
     .call((sel) => sel.selectAll("text").attr("fill", "var(--color-text-muted)").attr("font-size", 11));
 
+  // Faixas sutis de fundo para cada região
   g.selectAll("rect.band")
     .data(groups)
     .join("rect")
@@ -50,6 +54,7 @@ export function createStripPlot(container, data, {
     .attr("fill", (d, i) => (i % 2 === 0 ? "rgba(0, 0, 0, 0.02)" : "transparent"))
     .attr("rx", 4);
 
+  // Rótulos de grupo/região à esquerda
   g.selectAll("text.group")
     .data(groups)
     .join("text")
@@ -63,6 +68,7 @@ export function createStripPlot(container, data, {
     .attr("font-weight", 600)
     .text((d) => d);
 
+  // Linha de referência no threshold (50)
   if (threshold != null) {
     g.append("line")
       .attr("x1", x(threshold))
@@ -83,9 +89,10 @@ export function createStripPlot(container, data, {
       .text(`Corte editorial: ${threshold} pontos`);
   }
 
-  const belowColor = "#2a78d6";
-  const aboveColor = "#e34948";
+  const belowColor = "#2a78d6"; // Azul para abaixo de 50
+  const aboveColor = "#e34948"; // Vermelho/coral para 50+
 
+  // Semente fixa mantém a dispersão vertical reproduzível entre renderizações.
   const rnd = d3.randomLcg(42);
   const jitter = d3.randomUniform.source(rnd)(-1, 1);
 
@@ -112,6 +119,7 @@ export function createStripPlot(container, data, {
     })
     .on("mouseleave", () => tooltip?.hide());
 
+  // Legenda das notas em relação ao limite configurado.
   const legendWrap = wrapOuter.append("div").attr("class", "legend");
   legendWrap.html(`
     <div class="legend-item"><span class="swatch" style="background:${belowColor}"></span> Abaixo de ${threshold} pontos</div>

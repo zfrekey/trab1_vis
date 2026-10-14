@@ -3,9 +3,11 @@ import { mountBigMacWrapper } from "./cases/big-mac/index.js";
 import { mountCpiCase } from "./cases/cpi/index.js";
 import { mountMeatCase } from "./cases/meat/index.js";
 
+// Prepara o contêiner raiz da aplicação.
 const app = document.getElementById("app");
 app.innerHTML = "";
 
+// Header com título do trabalho, integrantes e navegação entre os 3 casos
 const header = document.createElement("header");
 header.className = "app-header-container";
 header.innerHTML = `
@@ -31,26 +33,38 @@ header.innerHTML = `
 `;
 app.appendChild(header);
 
+// Contêiner principal para os casos
 const mainContent = document.createElement("main");
 app.appendChild(mainContent);
 
+// ==========================================
+// CASO 1: Big Mac Index
+// ==========================================
 const case1Root = document.createElement("div");
 case1Root.id = "case-1-section";
 case1Root.className = "case-section is-active";
 mainContent.appendChild(case1Root);
 
+// O primeiro caso já é montado; os outros aguardam a navegação.
 mountBigMacWrapper(case1Root);
 
+// ==========================================
+// CASO 2: Índice de Corrupção (CPI)
+// ==========================================
 const cpiRoot = document.createElement("div");
 cpiRoot.id = "cpi-section";
 cpiRoot.className = "case-section";
 mainContent.appendChild(cpiRoot);
 
+// ==========================================
+// CASO 3: Produção Mundial de Carne
+// ==========================================
 const meatRoot = document.createElement("div");
 meatRoot.id = "meat-section";
 meatRoot.className = "case-section";
 mainContent.appendChild(meatRoot);
 
+// Lazy mounting dos casos 2 e 3
 const mountedCases = {
   "case-1": true,
   "cpi": false,
@@ -58,14 +72,17 @@ const mountedCases = {
 };
 
 async function activateCase(caseId) {
+  // Atualiza botões da navegação
   header.querySelectorAll(".case-nav-btn").forEach((btn) => {
     btn.classList.toggle("is-active", btn.dataset.case === caseId);
   });
 
+  // Atualiza visibilidade dos contêineres
   case1Root.classList.toggle("is-active", caseId === "case-1");
   cpiRoot.classList.toggle("is-active", caseId === "cpi");
   meatRoot.classList.toggle("is-active", caseId === "meat");
 
+  // Monta cada caso pesado apenas na primeira vez em que é aberto.
   if (caseId === "cpi" && !mountedCases["cpi"]) {
     mountedCases["cpi"] = true;
     await mountCpiCase(cpiRoot);
@@ -77,6 +94,7 @@ async function activateCase(caseId) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+// Liga cada botão ao caso identificado pelo atributo data-case.
 header.querySelectorAll(".case-nav-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
     activateCase(btn.dataset.case);

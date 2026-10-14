@@ -1,5 +1,9 @@
+// Conteúdo do tooltip/painel do Redesign 2 (raw x adjusted). Reaproveita
+// as classes .info-* já definidas em case.css para o Redesign 1.
 import { formatPercent, formatPercentagePoints, formatUsd } from "../../../shared/utils/format.js";
 
+// Classificação derivada dos dados (nunca escrita à mão por país): compara
+// o sinal de USD_raw com o de USD_adjusted.
 export function classifyAdjustment(raw, adjusted) {
   const rawOvervalued = raw >= 0;
   const adjustedOvervalued = adjusted >= 0;
@@ -14,6 +18,7 @@ function indexClass(value) {
   return value >= 0 ? "value-positive" : "value-negative";
 }
 
+// Resume os dois índices, seu efeito e a classificação do país.
 export function renderRawAdjustedInfoHtml(record) {
   const { name, currency_code, dollar_price, USD_raw, USD_adjusted, adjustment_effect } = record;
 
@@ -30,6 +35,7 @@ export function renderRawAdjustedInfoHtml(record) {
   `;
 }
 
+// Conteúdo exibido ao inspecionar um ponto do histórico.
 export function renderHistoryPointHtml(name, dateLabel, raw, adjusted) {
   return `
     <div class="info-title">${name}</div>

@@ -1,9 +1,11 @@
 import * as d3 from "d3";
 
+// Espaçamento entre o cursor e o tooltip, limitado à área visível da janela.
 const OFFSET_X = 16;
 const OFFSET_Y = 16;
 
 export function createTooltip(container) {
+  // Cria um único elemento que recebe o conteúdo e a posição em cada interação.
   const el = d3
     .select(container)
     .append("div")
@@ -17,6 +19,7 @@ export function createTooltip(container) {
     el.style("opacity", 1);
   }
 
+  // Segue o ponteiro, mas sem deixar o tooltip cortar nas bordas da tela.
   function move(event) {
     const { clientX, clientY } = event;
     const rect = el.node().getBoundingClientRect();

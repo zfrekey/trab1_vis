@@ -1,5 +1,9 @@
+// Instância única global do DuckDB-WASM: compartilhada por todos os casos do projeto.
+// Reaproveita UMA AsyncDuckDB + UMA conexão em vez de recriar a cada consulta ou caso.
 import * as duckdb from "@duckdb/duckdb-wasm";
 
+// `?url` faz o Vite copiar wasm/worker para o build e devolver uma URL local
+// (bundles "self-hosted", sem depender de CDN em runtime).
 import duckdbWasmMvp from "@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?url";
 import duckdbWorkerMvp from "@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js?url";
 import duckdbWasmEh from "@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url";
@@ -14,7 +18,7 @@ let dbPromise = null;
 let connectionPromise = null;
 const registeredFiles = new Set();
 
-// inicializa o duckdb no navegador senao a tela fica em branco e nada funciona confia
+// Inicializa o worker e a instância WASM sob demanda.
 export function getDb() {
   if (!dbPromise) {
     dbPromise = (async () => {
@@ -29,6 +33,7 @@ export function getDb() {
   return dbPromise;
 }
 
+// Mantém uma conexão compartilhada entre consultas e casos.
 export function getConnection() {
   if (!connectionPromise) {
     connectionPromise = getDb().then((db) => db.connect());
@@ -36,6 +41,9 @@ export function getConnection() {
   return connectionPromise;
 }
 
+// O resultado vem como tabela Arrow; toArray()+toJSON() converte cada
+// linha em objeto simples para o resto do código não lidar com Arrow.
+// Converte também BigInt para Number para evitar problemas de serialização.
 export async function query(sql, params = []) {
   const conn = await getConnection();
   const result =
@@ -51,6 +59,8 @@ export async function query(sql, params = []) {
   });
 }
 
+// Registra um arquivo no filesystem virtual do DuckDB-WASM para ser lido
+// via SQL com read_csv_auto(nome, ...). Idempotente por virtualName.
 export async function registerLocalFile(virtualName, url) {
   if (registeredFiles.has(virtualName)) return;
   const db = await getDb();

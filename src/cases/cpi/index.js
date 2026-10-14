@@ -11,6 +11,7 @@ import { createDivergingBarChart } from "./charts/divergingBarChart.js";
 import { createStripPlot } from "./charts/stripPlot.js";
 import { createTooltip } from "../../shared/components/tooltip.js";
 
+// Estrutura das abas, explicação do caso e áreas dos gráficos.
 const MARKUP = `
   <div class="case-container">
     <header class="case-header">
@@ -67,10 +68,12 @@ const MARKUP = `
 `;
 
 export async function mountCpiCase(root) {
+  // Alterna os painéis e carrega os dados antes de criar os dois gráficos.
   root.innerHTML = MARKUP;
 
   const tooltip = createTooltip(document.body);
 
+  // Tab switching
   const tabs = root.querySelectorAll(".tabs-nav .tab-btn");
   const panes = {
     "design-a": root.querySelector("#c2-panel-design-a"),
@@ -88,6 +91,7 @@ export async function mountCpiCase(root) {
     });
   });
 
+  // SQL Toggles
   root.querySelectorAll(".sql-toggle").forEach((toggle) => {
     toggle.addEventListener("click", () => {
       const pre = toggle.nextElementSibling;
@@ -98,6 +102,7 @@ export async function mountCpiCase(root) {
     });
   });
 
+  // Carrega os dados e monta os gráficos
   await initCpiData();
 
   const [diffRows, regionRows] = await Promise.all([
@@ -105,12 +110,14 @@ export async function mountCpiCase(root) {
     case2DesignBData(),
   ]);
 
+  // Design A
   createDivergingBarChart(root.querySelector("#c2-chart-a"), diffRows, {
     tooltip,
     baselineLabel: `ao corte de ${CPI_THRESHOLD} pontos`,
   });
   root.querySelector("#c2-sql-a").textContent = CASE2_DESIGN_A_SQL;
 
+  // Design B
   createStripPlot(root.querySelector("#c2-chart-b"), regionRows, {
     threshold: CPI_THRESHOLD,
     tooltip,

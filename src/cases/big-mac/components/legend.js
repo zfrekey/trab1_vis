@@ -1,3 +1,5 @@
+// Legenda divergente do mapa: barra de gradiente + rótulos de texto, para
+// a escala nunca depender só da cor.
 import * as d3 from "d3";
 import { formatPercent } from "../../../shared/utils/format.js";
 import { NO_DATA_COLOR } from "../charts/worldMap.js";
@@ -5,6 +7,7 @@ import { NO_DATA_COLOR } from "../charts/worldMap.js";
 const GRADIENT_STOPS = 12;
 
 export function createLegend(container) {
+  // Prepara a escala visual; update ajusta as cores e rótulos ao domínio atual.
   const svg = d3
     .select(container)
     .append("svg")

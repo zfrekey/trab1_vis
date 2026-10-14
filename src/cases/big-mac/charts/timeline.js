@@ -1,3 +1,5 @@
+// Um marcador por data que realmente existe no dataset (nunca uma grade
+// mensal/anual assumida).
 import * as d3 from "d3";
 import { formatDate } from "../../../shared/utils/format.js";
 
@@ -11,6 +13,7 @@ function toDate(dateKey) {
   return new Date(`${dateKey}T00:00:00`);
 }
 
+// Linha do tempo com navegação por pontos e botões anterior/próximo.
 export function createTimeline(container, { onSelect } = {}) {
   const wrapper = d3.select(container).attr("class", "timeline");
 
@@ -47,6 +50,7 @@ export function createTimeline(container, { onSelect } = {}) {
   let dates = [];
   let selectedIndex = -1;
 
+  // Atualiza o índice selecionado e notifica o componente que monta o gráfico.
   function selectIndex(index) {
     if (index < 0 || index >= dates.length || index === selectedIndex) return;
     selectedIndex = index;
@@ -71,6 +75,7 @@ export function createTimeline(container, { onSelect } = {}) {
   }
 
   function render(dateKeys, initialDateKey) {
+    // Constrói um marcador por observação e destaca a data inicial.
     dates = dateKeys;
     xScale.domain(dateKeys);
     selectedIndex = Math.max(0, dateKeys.indexOf(initialDateKey));
@@ -88,6 +93,7 @@ export function createTimeline(container, { onSelect } = {}) {
 
     pointsLayer.selectAll("circle.timeline-point").on("click", (event, d) => selectIndex(dateKeys.indexOf(d)));
 
+    // Reduz os rótulos de ano para não sobrepor (~TARGET_LABEL_COUNT no total).
     const stride = Math.max(1, Math.round(dateKeys.length / TARGET_LABEL_COUNT));
     const labeled = dateKeys.filter((_, i) => i % stride === 0);
 

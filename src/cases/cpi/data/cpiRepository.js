@@ -1,9 +1,10 @@
 import { registerLocalFile, query } from "../../../shared/data/duckdb.js";
 
+// Carregamento do CSV e consultas que alimentam os dois designs do CPI.
 const CSV_VIRTUAL_NAME = "corruption_perceptions_index.csv";
 const CSV_URL = `${import.meta.env.BASE_URL}cpi/data/corruption-perceptions-index.csv`;
 
-export const CPI_THRESHOLD = 50;
+export const CPI_THRESHOLD = 50; // linha de corte editorial da Transparency International
 
 let initPromise = null;
 
@@ -30,6 +31,7 @@ WHERE Year = 2024 AND Code IS NOT NULL
 ORDER BY diff_vs_threshold DESC;
 `.trim();
 
+// Diferença da nota para o limite editorial, usada no gráfico divergente.
 export async function case2DesignAData() {
   await initCpiData();
   return query(CASE2_DESIGN_A_SQL);
@@ -44,6 +46,7 @@ WHERE Year = 2024 AND Code IS NOT NULL
 ORDER BY region, score;
 `.trim();
 
+// Nota e região para a distribuição por grupos.
 export async function case2DesignBData() {
   await initCpiData();
   return query(CASE2_DESIGN_B_SQL);

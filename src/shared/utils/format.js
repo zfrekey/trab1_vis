@@ -1,3 +1,4 @@
+// Formatadores reutilizados para manter unidades e localização consistentes.
 const percentFormatter = new Intl.NumberFormat("pt-BR", {
   style: "percent",
   minimumFractionDigits: 1,
@@ -21,11 +22,13 @@ const pointsFormatter = new Intl.NumberFormat("pt-BR", {
   signDisplay: "exceptZero",
 });
 
+// CSV guarda o índice como proporção (-0.25 = -25%); aqui vira percentual.
 export function formatPercent(value) {
   if (value === null || value === undefined || Number.isNaN(value)) return "-";
   return percentFormatter.format(value);
 }
 
+// Formata preço local com código de moeda e preço convertido para dólar.
 export function formatPrice(value, currencyCode) {
   if (value === null || value === undefined || Number.isNaN(value)) return "-";
   return `${priceFormatter.format(value)} ${currencyCode ?? ""}`.trim();
@@ -41,11 +44,13 @@ export function formatDate(date) {
   return dateFormatter.format(date);
 }
 
+// Exibe posições ordinais e diferenças entre índices em pontos percentuais.
 export function formatOrdinal(rank) {
   if (rank === null || rank === undefined) return "-";
   return `${rank}º`;
 }
 
+// Diferença entre dois índices (ex: adjustment_effect), em pontos percentuais.
 export function formatPercentagePoints(value) {
   if (value === null || value === undefined || Number.isNaN(value)) return "-";
   return `${pointsFormatter.format(value * 100)} p.p.`;

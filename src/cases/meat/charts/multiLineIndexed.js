@@ -3,6 +3,7 @@ import { MEAT_LABELS } from "../data/meatRepository.js";
 
 const PALETTE = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#7c4dff"];
 
+// Compara o crescimento relativo das séries usando o mesmo eixo vertical.
 export function createMultiLineIndexed(container, data, {
   xKey = "year",
   seriesKeys,
@@ -30,12 +31,14 @@ export function createMultiLineIndexed(container, data, {
   const allVals = data.flatMap((d) => seriesKeys.map((k) => d[k]).filter((v) => v != null));
   const y = d3.scaleLinear().domain([0, d3.max(allVals)]).nice().range([innerH, 0]);
 
+  // Eixo X
   g.append("g")
     .attr("class", "axis")
     .attr("transform", `translate(0,${innerH})`)
     .call(d3.axisBottom(x).ticks(8).tickFormat(d3.format("d")))
     .call((sel) => sel.selectAll("text").attr("fill", "var(--color-text-muted)").attr("font-size", 11));
 
+  // Eixo Y
   g.append("g")
     .attr("class", "axis")
     .call(d3.axisLeft(y).ticks(6).tickSize(-innerW))
@@ -43,6 +46,7 @@ export function createMultiLineIndexed(container, data, {
     .call((sel) => sel.select(".domain").remove())
     .call((sel) => sel.selectAll("text").attr("fill", "var(--color-text-muted)").attr("font-size", 11));
 
+  // Linha de base no índice 100
   g.append("line")
     .attr("x1", 0)
     .attr("x2", innerW)
@@ -75,6 +79,7 @@ export function createMultiLineIndexed(container, data, {
       .attr("d", line);
   });
 
+  // Crosshair e overlay selecionam o ano mais próximo do ponteiro.
   const focusLine = g.append("line")
     .attr("stroke", "var(--color-text)")
     .attr("stroke-dasharray", "2,2")
@@ -114,6 +119,7 @@ export function createMultiLineIndexed(container, data, {
     tooltip?.hide();
   });
 
+  // Legenda associa cada série à sua cor e ao nome em português.
   const legendWrap = wrapOuter.append("div").attr("class", "legend");
   seriesKeys.forEach((key) => {
     const label = MEAT_LABELS[key] || key;
